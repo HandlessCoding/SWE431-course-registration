@@ -4,7 +4,8 @@ import java.util.regex.Pattern;
 
 public final class RegistrationInputValidator {
     private static final Pattern STUDENT_ID = Pattern.compile("[0-9]{9}");
-    private static final Pattern COURSE_CODE = Pattern.compile("[A-Z]{3}[0-9]{3}");
+    // Separator-delimited groups never need to backtrack. Possessive repetition avoids stack growth.
+    private static final Pattern COURSE_CODE = Pattern.compile("[A-Z0-9]+(?:[.-][A-Z0-9]+)*+");
 
     private RegistrationInputValidator() {
     }
@@ -18,7 +19,8 @@ public final class RegistrationInputValidator {
     public static void validateCourseCode(String courseCode) {
         if (courseCode == null || !COURSE_CODE.matcher(courseCode).matches()) {
             throw new IllegalArgumentException(
-                    "Course code must contain three uppercase ASCII letters followed by three ASCII digits.");
+                    "Course code must contain uppercase ASCII letters or digits"
+                            + " with optional single periods or hyphens between groups.");
         }
     }
 }

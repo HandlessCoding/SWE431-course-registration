@@ -1,5 +1,6 @@
 package edu.swe431.registration;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -27,18 +28,31 @@ class RegistrationInputValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"SWE431", "ABC007"})
-    void acceptsCourseCodesWithThreeUppercaseAsciiLettersAndThreeAsciiDigits(String courseCode) {
+    @ValueSource(strings = {
+            "DA529", "CSR207", "ECON301", "IAED402", "MED150-C4", "METIK296", "PREPB2-TR-16", "PREPA1-GER.1",
+            "A", "0"
+    })
+    void acceptsCourseCodesMatchingProvisionalSyntax(String courseCode) {
         assertDoesNotThrow(() -> RegistrationInputValidator.validateCourseCode(courseCode));
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {
-            "SWE43", "SWE4310", "sWE431", "SW\u00C9431", "SWE43\u0661", "SWE43A", " SWE431", "SWE431 "
+            " DA529", "DA529 ", " ", "da529", "MED150-c4", "SW\u00C9431", "SWE43\u0661", "MED150_C4",
+            "-DA529", ".DA529", "DA529-", "DA529.", "MED150--C4", "PREPA1..GER", "MED150-.C4"
     })
     void rejectsMissingOrMalformedCourseCodes(String courseCode) {
         assertThrows(IllegalArgumentException.class,
                 () -> RegistrationInputValidator.validateCourseCode(courseCode));
+    }
+
+    @Test
+    void validatesCourseCodesWithManySegments() {
+        String courseCode = "A-".repeat(10_000) + "A";
+
+        assertDoesNotThrow(() -> RegistrationInputValidator.validateCourseCode(courseCode));
+        assertThrows(IllegalArgumentException.class,
+                () -> RegistrationInputValidator.validateCourseCode(courseCode + "-"));
     }
 }
