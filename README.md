@@ -9,10 +9,8 @@ With JDK 17 and Maven installed, run `mvn test` from the repository root. Maven 
 
 `RegistrationInputValidator` in `edu.swe431.registration` provides `validateStudentId(String)` and `validateCourseCode(String)`. Call both methods before changing registration state when adding the registration entry point.
 
-The assignment leaves formats unspecified. These rules are **provisional** pending group agreement.
-
-- Student ID must be exactly eight ASCII digits. A leading zero is valid, as in `01234567`.
-- Course code must be exactly three uppercase ASCII letters followed by three ASCII digits, as in `SWE431`.
+- Student ID must be exactly nine ASCII digits. The first two digits are the last two digits of the university entry year. In the synthetic ID `230000000`, `23` represents 2023. The validator checks only the format and accepts any two-digit prefix.
+- The provisional course code format requires exactly three uppercase ASCII letters followed by three ASCII digits, as in `SWE431`.
 - Both methods throw `IllegalArgumentException` for null, empty, malformed, or padded input.
 
 ### Test design
@@ -21,8 +19,8 @@ All test inputs are synthetic.
 
 | Group | Student ID examples | Course code examples | Expected result and reason |
 | --- | --- | --- | --- |
-| Valid format | `01234567`, `87654321` | `SWE431`, `ABC007` | Pass because the character classes and lengths match. Numeric segments can start with zero. |
-| One character short or long | `0123456`, `012345678` | `SWE43`, `SWE4310` | Throw because each field has a fixed length. |
-| Invalid characters at the required length | `01234A67`, `0123456٧` | `sWE431`, `SWÉ431`, `SWE43١`, `SWE43A` | Throw because case, ASCII character classes, or character positions are wrong. |
+| Valid format | `230000000`, `000000000`, `990000000` | `SWE431`, `ABC007` | Pass because the character classes and lengths match. Numeric segments can start with zero. |
+| One character short or long | `23000000`, `2300000000` | `SWE43`, `SWE4310` | Throw because each field has a fixed length. |
+| Invalid characters at the required length | `23000A000`, `23000000٧` | `sWE431`, `SWÉ431`, `SWE43١`, `SWE43A` | Throw because case, ASCII character classes, or character positions are wrong. |
 | Missing or empty | `null`, `""` | `null`, `""` | Throw because both fields require a value. |
-| Leading or trailing space | `" 01234567"`, `"01234567 "` | `" SWE431"`, `"SWE431 "` | Throw because spaces are outside the allowed formats. |
+| Whitespace | `" 230000000"`, `"230000000 "`, `" "` | `" SWE431"`, `"SWE431 "` | Throw because spaces are outside the allowed formats. |

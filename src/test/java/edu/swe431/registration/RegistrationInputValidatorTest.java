@@ -5,23 +5,25 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RegistrationInputValidatorTest {
     @ParameterizedTest
-    @ValueSource(strings = {"01234567", "87654321"})
-    void acceptsStudentIdsWithExactlyEightAsciiDigits(String studentId) {
+    @ValueSource(strings = {"230000000", "000000000", "990000000"})
+    void acceptsStudentIdsWithExactlyNineAsciiDigits(String studentId) {
         assertDoesNotThrow(() -> RegistrationInputValidator.validateStudentId(studentId));
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {
-            "0123456", "012345678", "01234A67", "0123456\u0667", " 01234567", "01234567 "
+            "23000000", "2300000000", "23000A000", "23000000\u0667", " 230000000", "230000000 ", " "
     })
     void rejectsMissingOrMalformedStudentIds(String studentId) {
-        assertThrows(IllegalArgumentException.class,
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> RegistrationInputValidator.validateStudentId(studentId));
+        assertEquals("Student ID must contain exactly nine ASCII digits.", exception.getMessage());
     }
 
     @ParameterizedTest

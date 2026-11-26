@@ -3,7 +3,7 @@ package edu.swe431.registration;
 import java.util.regex.Pattern;
 
 public final class RegistrationInputValidator {
-    private static final Pattern STUDENT_ID = Pattern.compile("[0-9]{8}");
+    private static final Pattern STUDENT_ID = Pattern.compile("[0-9]{9}");
     private static final Pattern COURSE_CODE = Pattern.compile("[A-Z]{3}[0-9]{3}");
 
     private RegistrationInputValidator() {
@@ -11,7 +11,7 @@ public final class RegistrationInputValidator {
 
     public static void validateStudentId(String studentId) {
         if (studentId == null || !STUDENT_ID.matcher(studentId).matches()) {
-            throw new IllegalArgumentException("Student ID must contain exactly eight ASCII digits.");
+            throw new IllegalArgumentException("Student ID must contain exactly nine ASCII digits.");
         }
     }
 
